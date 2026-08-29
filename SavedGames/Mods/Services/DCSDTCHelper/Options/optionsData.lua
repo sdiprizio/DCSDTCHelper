@@ -1,0 +1,12 @@
+cdata = {
+    DCS_DTC_HELPER = _("DCS DTC Helper"),
+    VIRTUAL_KEYBOARD_SHORTCUT = _("Virtual keyboard show/hide shortcut"),
+    VIRTUAL_KEYBOARD_SHORTCUT_INFO = _("Select the exact modifier keys, then enter one letter. Changes apply while DCS is running. An empty or invalid letter uses V; with no modifier selected, the shortcut is disabled."),
+    SHORTCUT_LEFT_CTRL = _("Left Ctrl"),
+    SHORTCUT_RIGHT_CTRL = _("Right Ctrl"),
+    SHORTCUT_LEFT_SHIFT = _("Left Shift"),
+    SHORTCUT_RIGHT_SHIFT = _("Right Shift"),
+    SHORTCUT_LEFT_ALT = _("Left Alt"),
+    SHORTCUT_RIGHT_ALT = _("Right Alt"),
+    SHORTCUT_KEY = _("Letter"),
+}

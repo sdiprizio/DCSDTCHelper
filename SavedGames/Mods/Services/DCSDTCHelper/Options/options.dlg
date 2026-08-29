@@ -1,0 +1,213 @@
+local leftMargin = 56
+local width = 850
+
+local TitleSkin = {
+    params = { name = "staticOptionsTitleSkin" },
+    states = {
+        released = {
+            [1] = { text = { horzAlign = { type = "min" } } },
+        },
+    },
+}
+
+local LabelSkin = {
+    params = { name = "staticOptionsCaptionSkin" },
+}
+
+local EditBoxSkin = {
+    params = { name = "editBoxSkin_login" },
+}
+
+local CheckBoxSkin = {
+    params = { name = "checkBoxSkin_options" },
+}
+
+local HelpSkin = {
+    params = { name = "staticSkin2" },
+    states = {
+        released = {
+            [1] = {
+                text = {
+                    fontSize = 10,
+                    horzAlign = { type = "min" },
+                },
+            },
+        },
+    },
+}
+
+dialog = {
+    children = {
+        containerPlugin = {
+            type = "Panel",
+            skin = { params = { name = "panelSkin" } },
+            params = {
+                enabled = true,
+                bounds = { x = 0, y = 0, w = 974, h = 320 },
+                visible = true,
+                tooltip = "",
+                zindex = 2,
+                text = "",
+            },
+            children = {
+                title = {
+                    type = "Static",
+                    skin = TitleSkin,
+                    params = {
+                        enabled = true,
+                        bounds = { x = leftMargin, y = 30, w = width, h = 24 },
+                        visible = true,
+                        tooltip = "",
+                        zindex = 0,
+                        text = "$DCS_DTC_HELPER",
+                    },
+                },
+                shortcutHeading = {
+                    type = "Static",
+                    skin = LabelSkin,
+                    params = {
+                        enabled = true,
+                        bounds = { x = leftMargin, y = 85, w = width, h = 20 },
+                        visible = true,
+                        tooltip = "",
+                        zindex = 0,
+                        text = "$VIRTUAL_KEYBOARD_SHORTCUT",
+                    },
+                },
+                shortcutLeftCtrlCheckbox = {
+                    type = "CheckBox",
+                    skin = CheckBoxSkin,
+                    params = {
+                        enabled = true,
+                        bounds = { x = leftMargin, y = 110, w = 175, h = 20 },
+                        visible = true,
+                        tooltip = "",
+                        zindex = 0,
+                        state = false,
+                        text = "$SHORTCUT_LEFT_CTRL",
+                        tabOrder = 0,
+                    },
+                },
+                shortcutRightCtrlCheckbox = {
+                    type = "CheckBox",
+                    skin = CheckBoxSkin,
+                    params = {
+                        enabled = true,
+                        bounds = { x = leftMargin + 190, y = 110, w = 175, h = 20 },
+                        visible = true,
+                        tooltip = "",
+                        zindex = 0,
+                        state = false,
+                        text = "$SHORTCUT_RIGHT_CTRL",
+                        tabOrder = 1,
+                    },
+                },
+                shortcutLeftShiftCheckbox = {
+                    type = "CheckBox",
+                    skin = CheckBoxSkin,
+                    params = {
+                        enabled = true,
+                        bounds = { x = leftMargin, y = 140, w = 175, h = 20 },
+                        visible = true,
+                        tooltip = "",
+                        zindex = 0,
+                        state = false,
+                        text = "$SHORTCUT_LEFT_SHIFT",
+                        tabOrder = 2,
+                    },
+                },
+                shortcutRightShiftCheckbox = {
+                    type = "CheckBox",
+                    skin = CheckBoxSkin,
+                    params = {
+                        enabled = true,
+                        bounds = { x = leftMargin + 190, y = 140, w = 175, h = 20 },
+                        visible = true,
+                        tooltip = "",
+                        zindex = 0,
+                        state = false,
+                        text = "$SHORTCUT_RIGHT_SHIFT",
+                        tabOrder = 3,
+                    },
+                },
+                shortcutLeftAltCheckbox = {
+                    type = "CheckBox",
+                    skin = CheckBoxSkin,
+                    params = {
+                        enabled = true,
+                        bounds = { x = leftMargin, y = 170, w = 175, h = 20 },
+                        visible = true,
+                        tooltip = "",
+                        zindex = 0,
+                        state = false,
+                        text = "$SHORTCUT_LEFT_ALT",
+                        tabOrder = 4,
+                    },
+                },
+                shortcutRightAltCheckbox = {
+                    type = "CheckBox",
+                    skin = CheckBoxSkin,
+                    params = {
+                        enabled = true,
+                        bounds = { x = leftMargin + 190, y = 170, w = 175, h = 20 },
+                        visible = true,
+                        tooltip = "",
+                        zindex = 0,
+                        state = false,
+                        text = "$SHORTCUT_RIGHT_ALT",
+                        tabOrder = 5,
+                    },
+                },
+                shortcutKeyLabel = {
+                    type = "Static",
+                    skin = LabelSkin,
+                    params = {
+                        enabled = true,
+                        bounds = { x = leftMargin, y = 205, w = 175, h = 20 },
+                        visible = true,
+                        tooltip = "",
+                        zindex = 0,
+                        text = "$SHORTCUT_KEY",
+                    },
+                },
+                shortcutKeyEditBox = {
+                    type = "EditBox",
+                    skin = EditBoxSkin,
+                    params = {
+                        enabled = true,
+                        bounds = { x = leftMargin + 190, y = 202, w = 60, h = 24 },
+                        visible = true,
+                        tooltip = "",
+                        zindex = 0,
+                        text = "",
+                        tabOrder = 6,
+                    },
+                },
+                shortcutHelp = {
+                    type = "Static",
+                    skin = HelpSkin,
+                    params = {
+                        enabled = true,
+                        bounds = { x = leftMargin, y = 242, w = width, h = 42 },
+                        visible = true,
+                        tooltip = "",
+                        zindex = 0,
+                        text = "$VIRTUAL_KEYBOARD_SHORTCUT_INFO",
+                    },
+                },
+            },
+        },
+    },
+    type = "Window",
+    skin = { params = { name = "windowSkin" } },
+    params = {
+        bounds = { x = 0, y = 0, w = 1135, h = 851 },
+        draggable = true,
+        enabled = true,
+        hasCursor = true,
+        lockFlow = false,
+        modal = false,
+        text = "dialog",
+        zOrder = 1,
+    },
+}

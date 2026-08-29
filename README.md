@@ -1,22 +1,18 @@
 # DCS DTC Helper
 
-The project is installed entirely under the active DCS Saved Games profile.
-No DCS installation files are changed.
+This project aims to :
 
-## Current milestone: virtual keyboard foundation
+- Create a virtual keyboard for VR usage
+- Create a link between DCS F10 map (in multiplayer server) and DTC map.
 
-`SavedGames/Scripts/Hooks/DCSDTCHelperGameGUI.lua` opens a basic QWERTY
-keyboard as the DCS GUI loads, so it is available in missions and DTC. Clickable
-keys update the selected native DCS text field. Click the target field first,
-place its caret where text should be inserted, then click the virtual keys.
-The keyboard preserves the field's caret position after each edit.
+## Virtual keyboard shortcut
 
-### Manual test
+Press `Ctrl+Shift+V` to show or hide the virtual keyboard. This default shortcut
+can be changed in Special options
 
-1. Copy the repository's `SavedGames` contents into the active profile, normally
-   `%USERPROFILE%\Saved Games\DCS`.
-2. Start a mission, then exit DCS.
-3. In `%USERPROFILE%\Saved Games\DCS\Logs\dcs.log`, search for
-   `DCSDTCHelper`.
-4. Confirm the keyboard appears and that clicking keys updates the selected DCS
-   field at its existing caret position.
+The project also installs a Saved Games service module. In **Options → Special
+→ DCS DTC Helper**, select the exact left/right modifier keys and enter the
+single trigger letter. Changes apply without restarting DCS. An empty or
+invalid letter falls back to `V`; selecting no modifier disables the shortcut.
+
+It is largely made with AI coding, we are in 2026, it is a small project for DCS World, not a nuclear plant code... I don't have time to do it by hand.
