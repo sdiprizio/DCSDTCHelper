@@ -1,0 +1,16 @@
+# DCS runtime logs and profile-specific files
+SavedGames/Logs/
+SavedGames/Config/
+SavedGames/MissionEditor/
+
+# Lua tooling/editor output
+*.luac
+*.tmp
+*.bak
+*.swp
+
+# Local editor and operating-system metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
