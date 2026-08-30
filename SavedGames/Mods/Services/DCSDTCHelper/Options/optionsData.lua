@@ -9,4 +9,7 @@ cdata = {
     SHORTCUT_LEFT_ALT = _("Left Alt"),
     SHORTCUT_RIGHT_ALT = _("Right Alt"),
     SHORTCUT_KEY = _("Letter"),
+    COORDINATE_LIST_SHORTCUT = _("Coordinate list show/hide shortcut"),
+    COORDINATE_LIST_SHORTCUT_INFO = _("Shortcut for the temporary F10 coordinate list. Select the exact modifier keys, then enter one letter. An empty or invalid letter uses C; selecting no modifier disables the shortcut."),
+    COORDINATE_LIST_SHORTCUT_KEY = _("Letter"),
 }

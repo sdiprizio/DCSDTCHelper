@@ -1,11 +1,8 @@
--- DCS DTC Helper -- Saved Games GameGUI hook
+-- DCS DTC Helper -- virtual keyboard feature module.
 --
--- Install under the active DCS Saved Games directory as:
---   Scripts\Hooks\DCSDTCHelperGameGUI.lua
---
--- This milestone displays a self-contained, VR-clickable keyboard. It keeps its
--- own text buffer while character delivery to an arbitrary existing DCS field is
--- investigated separately.
+-- Loaded by Scripts\Hooks\DCSDTCHelperVirtualKeyboard.lua.
+
+local M = {}
 
 local TAG = "DCSDTCHelper"
 local INFO = (log and log.INFO) or 0
@@ -36,11 +33,9 @@ local shortcut = {
     enabled = true,
 }
 
--- GameGUI hooks do not include the DTC UI directory by default. Add only the
--- installed DCS UI search paths needed to inspect the active DTC dialog.
+-- GameGUI hooks do not include the stock UI Lua search paths by default.
 package.path = package.path
     .. ";.\\Scripts\\UI\\?.lua"
-    .. ";.\\Scripts\\UI\\DTC_manager\\?.lua"
     .. ";.\\MissionEditor\\modules\\?.lua"
 
 local function write(level, message)
@@ -192,8 +187,8 @@ local function on_simulation_start()
         install_keyboard_shortcut(Gui)
 
         local screen_width, screen_height = Gui.GetWindowSize()
-        -- Keep this panel compact enough to leave the DTC map and its fields
-        -- usable. This is approximately half the first prototype's footprint.
+        -- Keep this panel compact enough to leave the active DCS UI usable.
+        -- This is approximately half the first prototype's footprint.
         local width, height = 450, 175
         local x = math.max(20, math.floor((screen_width - width) / 2))
         local y = math.max(20, math.floor((screen_height - height) / 2))
@@ -207,9 +202,8 @@ local function on_simulation_start()
 
         keyboard.window:setDraggable(true)
         keyboard.window:setHasCursor(true)
-        -- The Mission Editor map and DTC dialogs are regular dxgui windows that
-        -- cover the default Z layer. Match DCS's own overlay convention so this
-        -- keyboard remains above them without modifying their source files.
+        -- Native DCS dialogs cover the default Z layer. Match DCS's overlay
+        -- convention so this keyboard remains above them without source edits.
         keyboard.window:setZOrder(10002)
 
         local function read_selection(pointer)
@@ -487,21 +481,20 @@ local function show_keyboard(context)
     end
 end
 
-local callbacks = {
-    onSimulationStart = function()
-        show_keyboard("simulation start")
-    end,
-    -- This callback is invoked when DCS returns to its main GUI, including the
-    -- Mission Editor. It is not listed in the control API, but is documented as
-    -- a simulator callback in the installed GameGUI.lua source.
-    onShowMainInterface = function()
-        show_keyboard("main interface")
-    end,
-    onSimulationFrame = track_focused_edit_box,
-}
+function M.start()
+    DCS.setUserCallbacks({
+        onSimulationStart = function()
+            show_keyboard("simulation start")
+        end,
+        -- This callback is invoked when DCS returns to its main GUI, including
+        -- the Mission Editor. If GUI startup is still in progress, retry then.
+        onShowMainInterface = function()
+            show_keyboard("main interface")
+        end,
+        onSimulationFrame = track_focused_edit_box,
+    })
+    -- Make the keyboard available before the first mission as well.
+    show_keyboard("hook load")
+end
 
-DCS.setUserCallbacks(callbacks)
--- Create the window once the hook is loaded so it is available before the first
--- mission (for example, while working in the Mission Editor). If GUI startup is
--- still in progress, the supported lifecycle callbacks above retry the setup.
-show_keyboard("hook load")
+return M

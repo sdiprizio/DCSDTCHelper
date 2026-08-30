@@ -43,7 +43,7 @@ dialog = {
             skin = { params = { name = "panelSkin" } },
             params = {
                 enabled = true,
-                bounds = { x = 0, y = 0, w = 974, h = 320 },
+                bounds = { x = 0, y = 0, w = 974, h = 530 },
                 visible = true,
                 tooltip = "",
                 zindex = 2,
@@ -182,6 +182,46 @@ dialog = {
                         text = "",
                         tabOrder = 6,
                     },
+                },
+                coordinateListHeading = {
+                    type = "Static", skin = LabelSkin,
+                    params = { enabled = true, bounds = { x = leftMargin, y = 290, w = width, h = 20 }, visible = true, tooltip = "", zindex = 0, text = "$COORDINATE_LIST_SHORTCUT" },
+                },
+                coordinateListShortcutLeftCtrlCheckbox = {
+                    type = "CheckBox", skin = CheckBoxSkin,
+                    params = { enabled = true, bounds = { x = leftMargin, y = 315, w = 175, h = 20 }, visible = true, tooltip = "", zindex = 0, state = false, text = "$SHORTCUT_LEFT_CTRL", tabOrder = 7 },
+                },
+                coordinateListShortcutRightCtrlCheckbox = {
+                    type = "CheckBox", skin = CheckBoxSkin,
+                    params = { enabled = true, bounds = { x = leftMargin + 190, y = 315, w = 175, h = 20 }, visible = true, tooltip = "", zindex = 0, state = false, text = "$SHORTCUT_RIGHT_CTRL", tabOrder = 8 },
+                },
+                coordinateListShortcutLeftShiftCheckbox = {
+                    type = "CheckBox", skin = CheckBoxSkin,
+                    params = { enabled = true, bounds = { x = leftMargin, y = 345, w = 175, h = 20 }, visible = true, tooltip = "", zindex = 0, state = false, text = "$SHORTCUT_LEFT_SHIFT", tabOrder = 9 },
+                },
+                coordinateListShortcutRightShiftCheckbox = {
+                    type = "CheckBox", skin = CheckBoxSkin,
+                    params = { enabled = true, bounds = { x = leftMargin + 190, y = 345, w = 175, h = 20 }, visible = true, tooltip = "", zindex = 0, state = false, text = "$SHORTCUT_RIGHT_SHIFT", tabOrder = 10 },
+                },
+                coordinateListShortcutLeftAltCheckbox = {
+                    type = "CheckBox", skin = CheckBoxSkin,
+                    params = { enabled = true, bounds = { x = leftMargin, y = 375, w = 175, h = 20 }, visible = true, tooltip = "", zindex = 0, state = false, text = "$SHORTCUT_LEFT_ALT", tabOrder = 11 },
+                },
+                coordinateListShortcutRightAltCheckbox = {
+                    type = "CheckBox", skin = CheckBoxSkin,
+                    params = { enabled = true, bounds = { x = leftMargin + 190, y = 375, w = 175, h = 20 }, visible = true, tooltip = "", zindex = 0, state = false, text = "$SHORTCUT_RIGHT_ALT", tabOrder = 12 },
+                },
+                coordinateListShortcutKeyLabel = {
+                    type = "Static", skin = LabelSkin,
+                    params = { enabled = true, bounds = { x = leftMargin, y = 410, w = 175, h = 20 }, visible = true, tooltip = "", zindex = 0, text = "$COORDINATE_LIST_SHORTCUT_KEY" },
+                },
+                coordinateListShortcutKeyEditBox = {
+                    type = "EditBox", skin = EditBoxSkin,
+                    params = { enabled = true, bounds = { x = leftMargin + 190, y = 407, w = 60, h = 24 }, visible = true, tooltip = "", zindex = 0, text = "", tabOrder = 13 },
+                },
+                coordinateListShortcutHelp = {
+                    type = "Static", skin = HelpSkin,
+                    params = { enabled = true, bounds = { x = leftMargin, y = 447, w = width, h = 42 }, visible = true, tooltip = "", zindex = 0, text = "$COORDINATE_LIST_SHORTCUT_INFO" },
                 },
                 shortcutHelp = {
                     type = "Static",
