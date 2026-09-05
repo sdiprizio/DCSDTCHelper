@@ -1,4 +1,4 @@
--- DCS DTC Helper -- F10 coordinate collection and JDAM transfer feature.
+-- DCS DTC Helper -- F10 coordinate collection feature.
 -- Loaded by Scripts\Hooks\DCSDTCHelper.lua.
 
 local M = {}
@@ -10,6 +10,7 @@ local ERROR = (log and log.ERROR) or 2
 local DEFAULT_SHORTCUT_KEY = "C"
 
 local coordinate_list
+local map_markers
 local active_map
 local map_adapters = setmetatable({}, { __mode = "v" })
 local logged_non_map_capture_types = {}
@@ -113,13 +114,6 @@ local function is_map_widget(wrapper)
         and type(wrapper.removeUserObjects) == "function"
 end
 
-local function widget_name(widget)
-    if not widget then return "" end
-    if type(widget.name) == "string" then return string.lower(widget.name) end
-    local ok, value = pcall(widget.getName, widget)
-    return ok and type(value) == "string" and string.lower(value) or ""
-end
-
 local function create_feature()
     if coordinate_list then return end
     local ok, err = pcall(function()
@@ -136,63 +130,25 @@ local function create_feature()
         end
 
         local function map_adapter(pointer, type_name, wrapper, screen_x, screen_y)
-            if is_map_widget(wrapper) then return wrapper end
             if not pointer or type(type_name) ~= "string" then return nil end
             if map_adapters[pointer] then return map_adapters[pointer] end
             local normalized_type = string.lower(type_name)
             -- In this isolated hook state the F10 native map is reported as a
             -- generic Widget rather than its map class. Probe that pointer via
             -- gui_map and accept it only when it yields real map coordinates.
-            if not string.find(normalized_type, "map", 1, true) and normalized_type ~= "widget" then return nil end
+            if not is_map_widget(wrapper) and not string.find(normalized_type, "map", 1, true) and normalized_type ~= "widget" then return nil end
             local adapter = {
                 getMapPoint = function(_, screen_x, screen_y)
                     local widget_x, widget_y = Gui.ScreenToWidget(pointer, screen_x, screen_y)
                     return NativeMap.GetMapPoint(pointer, widget_x, widget_y)
                 end,
-                addUserObjects = function(_, objects) return NativeMap.AddUserObjects(objects, pointer) end,
-                removeUserObjects = function(_, objects) return NativeMap.RemoveUserObjects(objects, pointer) end,
+                refreshMarkers = function(map) return map_markers:refresh(pointer, map) end,
             }
             local valid, map_x, map_y = pcall(adapter.getMapPoint, adapter, screen_x, screen_y)
             if not valid or type(map_x) ~= "number" or type(map_y) ~= "number" then return nil end
             map_adapters[pointer] = adapter
             write(INFO, "coordinate list: using native " .. type_name .. " F10 map adapter")
             return adapter
-        end
-
-        local function transfer_to_jdam(point)
-            local lat, lon, elevation
-            local jdam_controls = false
-            for _, widget in pairs(Widget.widgets) do
-                if widget and widget.widget and widget:getTypeName() == "EditBox" then
-                    local name = widget_name(widget)
-                    if string.find(name, "jdam", 1, true) then
-                        jdam_controls = true
-                        if string.find(name, "lat", 1, true) then lat = widget end
-                        if string.find(name, "lon", 1, true) or string.find(name, "long", 1, true) then lon = widget end
-                        if string.find(name, "alt", 1, true) or string.find(name, "elev", 1, true) then elevation = widget end
-                    end
-                end
-            end
-            if not jdam_controls then return false, "Open the F-14B(U) JDAM DTC target editor first." end
-            if not lat or not lon or not elevation then
-                write(WARNING, "F-14B(U) JDAM DTC controls found but named coordinate fields are unavailable")
-                return false, "JDAM target fields are not exposed by this DCS build."
-            end
-            for _, update in ipairs({
-                { widget = lat, value = string.format("%.6f", point.lat) },
-                { widget = lon, value = string.format("%.6f", point.lon) },
-                { widget = elevation, value = tostring(point.elevation) },
-            }) do
-                local updated, update_err = pcall(function()
-                    update.widget:setText(update.value)
-                    if update.widget.onChange then update.widget:onChange() end
-                end)
-                if not updated then
-                    write(ERROR, "F-14B(U) JDAM DTC field update failed: " .. tostring(update_err))
-                    return false, "JDAM field update failed; see dcs.log."
-                end
-            end
-            return true, "Sent selected target to the active JDAM DTC slot."
         end
 
         coordinate_list = CoordinateList.new({
@@ -208,18 +164,21 @@ local function create_feature()
                 local sampled, height = pcall(Terrain.GetHeight, x, y)
                 return sampled and height or nil
             end,
-            transfer_to_jdam = transfer_to_jdam,
         })
         coordinate_list:create_ui()
+        map_markers = require("MapMarkers").new(Gui, NativeMap, coordinate_list)
 
-        Gui.AddMouseCallback("up", function(x, y)
+        Gui.AddMouseCallback("up", function(x, y, button)
+            if map_markers:mouse_up(x, y, button) then return end
+            if button ~= 1 then return end
             local pointer = Gui.FindWidgetAtScreenPoint(x, y)
             local wrapper = pointer and Widget.widgets[pointer] or nil
             local type_name = pointer and Gui.WidgetGetTypeName(pointer) or nil
             local map = map_adapter(pointer, type_name, wrapper, x, y)
             if map then
                 active_map = map
-                coordinate_list:capture_map_click(map, x, y)
+                if not coordinate_list.marker_sets[map] then coordinate_list:refresh_markers(map) end
+                coordinate_list:map_click(map, x, y)
             elseif coordinate_list.capture and type_name and not logged_non_map_capture_types[type_name] then
                 logged_non_map_capture_types[type_name] = true
                 write(WARNING, "coordinate list: capture release hit " .. tostring(type_name) .. ", not a map widget")
@@ -231,6 +190,7 @@ end
 
 local function on_frame()
     if not coordinate_list then return end
+    if map_markers then map_markers:update() end
     local now = DCS.getRealTime()
     if now - last_options_poll >= 0.25 then
         last_options_poll = now

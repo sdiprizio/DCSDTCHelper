@@ -10,8 +10,7 @@ This project aims to :
 Install both Saved Games hooks:
 
 - `Scripts/Hooks/DCSDTCHelperVirtualKeyboard.lua` provides the VR virtual keyboard.
-- `Scripts/Hooks/DCSDTCHelper.lua` provides F10 coordinate collection and F-14B(U)
-  JDAM DTC transfer.
+- `Scripts/Hooks/DCSDTCHelper.lua` provides F10 coordinate collection.
 
 The hook files are deliberately small. Their feature implementations live in
 `Scripts/DCSDTCHelper/`; the two hooks share only the plugin's single Special
@@ -25,17 +24,19 @@ can be changed in Special options
 ## F10 coordinate list
 
 Press `Ctrl+Shift+C` to show the **Coordinate List** (the shortcut is
-separately configurable in Special options). Enable **Capture** and release
-the mouse over the F10 map to collect numbered targets. Targets are kept only
+separately configurable in Special options). Enable **Add** and release the
+mouse over the F10 map to collect targets. Enable **Edit** to click a target's
+map marker or label to select or deselect it, or drag it to move the target.
+Markers appear above native map symbols, including units. Dragging empty map
+space still pans the map.
+Targets are kept only
 for the current DCS session and include latitude, longitude, and sampled ground
 elevation. The scrollable table lets you select one or more rows, edit labels,
-and review each point's index, coordinates, and altitude. Selected targets are
-highlighted on the map; delete supports multiple selected rows.
-
-With the F-14B(U) JDAM DTC target editor open, **Send selected to JDAM** tries
-to populate the active target fields. If a DCS/Heatblur build does not expose
-the native JDAM controls to the GameGUI hook, the panel leaves DTC unchanged
-and reports the reason in the status line and `dcs.log`.
+and review each point's index, coordinates, and altitude. Use the coordinate
+mode button to cycle through decimal degrees, degrees/minutes,
+degrees/minutes/seconds, and MGRS. The header checkbox selects or deselects
+every target. Selected targets are highlighted on the map; delete supports
+multiple selected rows.
 
 The project also installs a Saved Games service module. In **Options → Special
 → DCS DTC Helper**, select the exact left/right modifier keys and enter the

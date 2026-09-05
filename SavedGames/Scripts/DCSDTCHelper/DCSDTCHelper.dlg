@@ -14,46 +14,50 @@ dialog = {
                     },
                 },
             },
-            params = { bounds = { x = 0, y = 0, w = 495, h = 520 }, enabled = true, visible = true },
+            params = { bounds = { x = 0, y = 0, w = 495, h = 540 }, enabled = true, visible = true },
             children = {
                 btnCapture = {
                     type = "Button", skin = { params = { name = "buttonSkin_ME" } },
-                    params = { bounds = { x = 10, y = 5, w = 90, h = 20 }, enabled = true, text = "Capture: OFF", tooltip = "Enable F10 coordinate capture", visible = true, zindex = 5 },
+                    params = { bounds = { x = 10, y = 5, w = 90, h = 20 }, enabled = true, text = "Add", tooltip = "Enable F10 map point adding", visible = true, zindex = 5 },
+                },
+                btnEdit = {
+                    type = "Button", skin = { params = { name = "buttonSkin_ME" } },
+                    params = { bounds = { x = 105, y = 5, w = 90, h = 20 }, enabled = true, text = "Edit", tooltip = "Select or move F10 map targets", visible = true, zindex = 5 },
                 },
                 btnDeleteSelected = {
                     type = "Button", skin = { params = { name = "buttonSkin_ME" } },
-                    params = { bounds = { x = 105, y = 5, w = 115, h = 20 }, enabled = false, text = "Delete selected", tooltip = "Delete checked targets", visible = true, zindex = 5 },
+                    params = { bounds = { x = 200, y = 5, w = 115, h = 20 }, enabled = false, text = "Delete selected", tooltip = "Delete checked targets", visible = true, zindex = 5 },
                 },
-                btnClearAll = {
+                btnCoordinateMode = {
                     type = "Button", skin = { params = { name = "buttonSkin_ME" } },
-                    params = { bounds = { x = 225, y = 5, w = 70, h = 20 }, enabled = true, text = "Clear all", tooltip = "Clear temporary targets", visible = true, zindex = 5 },
-                },
-                btnSendToJDAM = {
-                    type = "Button", skin = { params = { name = "buttonSkin_ME" } },
-                    params = { bounds = { x = 300, y = 5, w = 180, h = 20 }, enabled = false, text = "Send selected to JDAM", tooltip = "Send one checked target to the active JDAM slot", visible = true, zindex = 5 },
+                    params = { bounds = { x = 10, y = 30, w = 261, h = 20 }, enabled = true, text = "Coordinates: Decimal Degrees", tooltip = "Switch coordinate display format", visible = true, zindex = 5 },
                 },
                 gCapturedTargets = {
                     type = "Grid",
                     skin = { params = { name = "gridSkin_Multiplayer_roleNew", minSize = { vert = 450 }, selectionColor = "0x2d8daaff" } },
-                    params = { bounds = { x = 5, y = 30, w = 482, h = 450 }, columnMouseResizing = false, enabled = true, fixedColumns = 0, rows = 0, text = "capturedTargets", tooltip = "Captured F10 targets", vertScrollBarStep = 1, vertScrollBarPageStep = 0, horzScrollBarStep = 1, horzScrollBarPageStep = 0, visible = true, zindex = 0 },
+                    params = { bounds = { x = 5, y = 55, w = 482, h = 425 }, columnMouseResizing = false, enabled = true, fixedColumns = 0, rows = 0, text = "capturedTargets", tooltip = "Captured F10 targets", vertScrollBarStep = 1, vertScrollBarPageStep = 0, horzScrollBarStep = 1, horzScrollBarPageStep = 0, visible = true, zindex = 0 },
                     children = {
-                        hSelect = { type = "GridHeaderCell", skin = { params = { name = "gridHeaderCellSkinNew" } }, params = { bounds = { x = 0, y = 0, w = 50, h = 20 }, draggable = false, enabled = true, text = "Select", visible = true, zindex = 0 } },
+                        hSelect = { type = "GridHeaderCell", skin = { params = { name = "gridHeaderCellSkinNew" } }, params = { bounds = { x = 0, y = 0, w = 50, h = 20 }, draggable = false, enabled = true, text = "", visible = true, zindex = 0 } },
                         hIndex = { type = "GridHeaderCell", skin = { params = { name = "gridHeaderCellSkinNew" } }, params = { bounds = { x = 50, y = 0, w = 35, h = 20 }, draggable = false, enabled = true, text = "#", visible = true, zindex = 1 } },
                         hLabel = { type = "GridHeaderCell", skin = { params = { name = "gridHeaderCellSkinNew" } }, params = { bounds = { x = 85, y = 0, w = 95, h = 20 }, draggable = false, enabled = true, text = "Label", visible = true, zindex = 2 } },
                         hCoordinates = { type = "GridHeaderCell", skin = { params = { name = "gridHeaderCellSkinNew" } }, params = { bounds = { x = 180, y = 0, w = 215, h = 20 }, draggable = false, enabled = true, text = "Coordinates", visible = true, zindex = 3 } },
-                        hAltitude = { type = "GridHeaderCell", skin = { params = { name = "gridHeaderCellSkinNew" } }, params = { bounds = { x = 395, y = 0, w = 87, h = 20 }, draggable = false, enabled = true, text = "Altitude", visible = true, zindex = 4 } },
+                        hAltitude = { type = "GridHeaderCell", skin = { params = { name = "gridHeaderCellSkinNew" } }, params = { bounds = { x = 395, y = 0, w = 87, h = 20 }, draggable = false, enabled = true, text = "Altitude (ft)", visible = true, zindex = 4 } },
                     },
                 },
                 sStatus = {
                     type = "Static", skin = { params = { name = "staticSkin" } },
-                    params = { bounds = { x = 5, y = 490, w = 482, h = 20 }, enabled = true, text = "Open F10, then enable Capture.", visible = true, zindex = 0 },
+                    params = { bounds = { x = 5, y = 490, w = 482, h = 20 }, enabled = true, text = "Open F10, then enable Add.", visible = true, zindex = 0 },
+                },
+                cbSelectAll = {
+                    type = "CheckBox", skin = { params = { name = "checkBoxSkin_MENew" } },
+                    params = { bounds = { x = 21, y = 56, w = 18, h = 18 }, enabled = true, state = false, tooltip = "Select or deselect all targets", visible = true, zindex = 10 },
                 },
             },
         },
     },
     type = "Window",
     skin = { params = { name = "windowSkin" } },
-    params = { bounds = { x = 0, y = 0, w = 495, h = 520 }, closeOnEsc = false, draggable = true, focusable = true, maximizeBox = false, minimizeBox = false, modal = false, resizable = false, text = "DCS DTC Helper - Coordinate List", zOrder = 0 },
+    params = { bounds = { x = 0, y = 0, w = 495, h = 540 }, closeOnEsc = false, draggable = true, focusable = true, maximizeBox = false, minimizeBox = false, modal = false, resizable = false, text = "DCS DTC Helper - Coordinate List", zOrder = 0 },
 }
 
 return dialog
