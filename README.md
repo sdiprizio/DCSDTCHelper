@@ -27,8 +27,11 @@ Press `Ctrl+Shift+C` to show the **Coordinate List** (the shortcut is
 separately configurable in Special options). Enable **Add** and release the
 mouse over the F10 map to collect targets. Enable **Edit** to click a target's
 map marker or label to select or deselect it, or drag it to move the target.
-Markers appear above native map symbols, including units. Dragging empty map
+Markers use a transparent cross centred on the target coordinates, with a separate
+label, above native map symbols including units. Dragging empty map
 space still pans the map.
+Existing targets are also shown on the DTC map when it is opened. Marker
+windows are hidden where another dialog covers their coordinate anchor.
 Targets are kept only
 for the current DCS session and include latitude, longitude, and sampled ground
 elevation. The scrollable table lets you select one or more rows, edit labels,

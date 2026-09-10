@@ -12,6 +12,7 @@ local keyboard
 local last_focus_scan = 0
 local last_shortcut_options_poll = 0
 local shortcut_registered = false
+local suspended = false
 local shortcut_left_ctrl_down = false
 local shortcut_right_ctrl_down = false
 local shortcut_left_shift_down = false
@@ -19,6 +20,7 @@ local shortcut_right_shift_down = false
 local shortcut_left_alt_down = false
 local shortcut_right_alt_down = false
 local shortcut_key_down = false
+local invalid_widgets = setmetatable({}, { __mode = "k" })
 
 local DEFAULT_SHORTCUT_KEY = "V"
 local shortcut = {
@@ -47,6 +49,7 @@ local function write(level, message)
 end
 
 local function toggle_keyboard()
+    if suspended then return end
     if not keyboard or not keyboard.window then
         write(WARNING, "virtual keyboard toggle ignored because the window is not ready")
         return
@@ -233,7 +236,17 @@ local function on_simulation_start()
 
         keyboard.capture_target = capture_target
 
+        local function target_is_live(target)
+            if target.wrapper and (target.wrapper.widget ~= target.pointer
+                or Widget.widgets[target.pointer] ~= target.wrapper) then
+                return false
+            end
+            local ok, type_name = pcall(Gui.WidgetGetTypeName, target.pointer)
+            return ok and type_name == "EditBox"
+        end
+
         Gui.AddMouseCallback("down", function(x, y)
+            if suspended then return end
             local pointer = Gui.FindWidgetAtScreenPoint(x, y)
             if pointer and Gui.WidgetGetTypeName(pointer) == "EditBox" then
                 capture_target(pointer, Widget.widgets[pointer], "global mouse")
@@ -242,6 +255,7 @@ local function on_simulation_start()
         -- Mouse-down identifies the widget; mouse-up sees the selection DCS
         -- has assigned after placing its native caret inside that EditBox.
         Gui.AddMouseCallback("up", function(x, y)
+            if suspended then return end
             local pointer = Gui.FindWidgetAtScreenPoint(x, y)
             if pointer and Gui.WidgetGetTypeName(pointer) == "EditBox" then
                 capture_target(pointer, Widget.widgets[pointer], "global mouse up")
@@ -249,8 +263,14 @@ local function on_simulation_start()
         end)
 
         local function apply_to_target(action, value)
+            if suspended then return false end
             local target = keyboard.target
             if target and target.type_name == "EditBox" then
+                if not target_is_live(target) then
+                    keyboard.target = nil
+                    write(WARNING, "virtual keyboard discarded an expired target (" .. target.source .. ")")
+                    return false
+                end
                 local selection = target.selection or read_selection(target.pointer)
                 local current = target.wrapper
                     and (target.wrapper:getText() or "")
@@ -295,14 +315,14 @@ local function on_simulation_start()
                 if target.wrapper and target.wrapper.onChange then
                     target.wrapper:onChange()
                 end
-                -- Clicking a virtual key transfers native dxgui focus to this
-                -- window. Restore it to the edited DCS field immediately so the
-                -- next key continues writing to the same place.
-                if target.wrapper then
-                    target.wrapper:setFocused(true)
-                else
-                    Gui.WidgetSetFocused(target.pointer, true)
+                -- Change handlers may rebuild the dialog and destroy this field.
+                if not target_is_live(target) then
+                    keyboard.target = nil
+                    write(WARNING, "virtual keyboard target expired in its change handler")
+                    return true
                 end
+                -- Keep the saved target/caret without forcing native focus during
+                -- mouse-up: cross-window refocus crashed dxgui's modal focus flow.
                 Gui.EditBoxSetSelection(target.pointer, 0, caret, 0, caret)
                 target.selection = read_selection(target.pointer)
 
@@ -440,7 +460,7 @@ local function on_simulation_start()
 end
 
 local function track_focused_edit_box()
-    if not keyboard or not keyboard.window then
+    if suspended or not keyboard or not keyboard.window then
         return
     end
 
@@ -461,10 +481,19 @@ local function track_focused_edit_box()
         for _, widget in pairs(Widget.widgets) do
             if widget
                 and widget.widget
-                and widget:getTypeName() == "EditBox"
-                and widget:getFocused() then
-                keyboard.capture_target(widget.widget, widget, "generic focus scan")
-                return
+                and not invalid_widgets[widget] then
+                -- Native container teardown can leave stale Lua registry entries.
+                -- One invalid entry must not prevent finding the selected field.
+                local valid, focused = pcall(function()
+                    return widget:getTypeName() == "EditBox" and widget:getFocused()
+                end)
+                if not valid then
+                    invalid_widgets[widget] = true
+                    write(WARNING, "virtual keyboard skipped invalid focus-scan widget: " .. tostring(focused))
+                elseif focused then
+                    keyboard.capture_target(widget.widget, widget, "generic focus scan")
+                    return
+                end
             end
         end
     end)
@@ -482,14 +511,33 @@ local function show_keyboard(context)
 end
 
 function M.start()
+    local function suspend_keyboard()
+        if suspended then return end
+        suspended = true
+        shortcut_left_ctrl_down, shortcut_right_ctrl_down = false, false
+        shortcut_left_shift_down, shortcut_right_shift_down = false, false
+        shortcut_left_alt_down, shortcut_right_alt_down = false, false
+        shortcut_key_down = false
+        if keyboard then
+            keyboard.target = nil
+            keyboard.text = ""
+            if keyboard.window then keyboard.window:setVisible(false) end
+        end
+        write(INFO, "virtual keyboard: mission references cleared; window hidden")
+    end
     DCS.setUserCallbacks({
+        onMissionLoadBegin = suspend_keyboard,
+        onSimulationStop = suspend_keyboard,
         onSimulationStart = function()
             show_keyboard("simulation start")
+            last_focus_scan, last_shortcut_options_poll = 0, 0
+            suspended = false
         end,
         -- This callback is invoked when DCS returns to its main GUI, including
         -- the Mission Editor. If GUI startup is still in progress, retry then.
         onShowMainInterface = function()
             show_keyboard("main interface")
+            suspended = false
         end,
         onSimulationFrame = track_focused_edit_box,
     })

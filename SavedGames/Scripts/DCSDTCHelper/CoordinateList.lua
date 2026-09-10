@@ -214,10 +214,12 @@ function M.new(api)
 
             local label = EditBox.new(point.name)
             label:setSkin(Skin["editBoxSkin_ME"]())
-            label:addChangeCallback(function(control)
+            -- EditBox's native change callback dispatches onChange; the virtual
+            -- keyboard also calls it after programmatically setting the text.
+            label.onChange = function(control)
                 point.name = control:getText() or ""
                 self:refresh_all_markers()
-            end)
+            end
             self.grid:setCell(2, row, label)
             self.grid:setCell(3, row, static_cell(self:format_coordinates(point)))
             self.grid:setCell(4, row, static_cell(string.format("%d ft", math.floor(point.elevation * 3.28084 + 0.5)), true))
